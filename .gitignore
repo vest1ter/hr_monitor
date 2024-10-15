@@ -6,4 +6,4 @@ env/
 # Исключить папки __pycache__ из всех директорий
 __pycache__/
 
-config
+config.py
