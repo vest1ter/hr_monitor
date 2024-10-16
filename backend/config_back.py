@@ -1,0 +1,6 @@
+SECRET_KEY = "secret"
+ALGORITHM = "HS256"
+ACCESS_TOKEN_EXPIRE_MINUTES = 30
+REFRESH_TOKEN_EXPIRE_DAYS = 7
+
+DATABASE_URL = "postgresql://hr_app:hr_pass123@localhost:5432/hr_base"

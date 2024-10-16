@@ -4,15 +4,15 @@ from pydantic import BaseModel
 import jwt
 import datetime
 from typing import Optional
-import config
+import config_back
 
 app = FastAPI()
 
 
-SECRET_KEY = config.SECRET_KEY
-ALGORITHM = config.ALGORITHM
-ACCESS_TOKEN_EXPIRE_MINUTES = config.ACCESS_TOKEN_EXPIRE_MINUTES
-REFRESH_TOKEN_EXPIRE_DAYS = config.REFRESH_TOKEN_EXPIRE_DAYS
+SECRET_KEY = config_back.SECRET_KEY
+ALGORITHM = config_back.ALGORITHM
+ACCESS_TOKEN_EXPIRE_MINUTES = config_back.ACCESS_TOKEN_EXPIRE_MINUTES
+REFRESH_TOKEN_EXPIRE_DAYS = config_back.REFRESH_TOKEN_EXPIRE_DAYS
 
 # Инициализация схемы аутентификации для FastAPI
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
