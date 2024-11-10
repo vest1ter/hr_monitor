@@ -1,5 +1,5 @@
 import uuid
-from .database import Base
+from ..database import Base
 from sqlalchemy import Column, String, Text, DateTime, ForeignKey, Enum, Integer
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import relationship
@@ -100,3 +100,5 @@ class ResumeStageHistory(Base):
 
     processed_by = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     processed_by_user = relationship("User")
+
+
