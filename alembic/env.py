@@ -18,7 +18,7 @@ if config.config_file_name is not None:
 # for 'autogenerate' support
 
 from backend.database import Base  
-from backend.models import User, Vacancy, Resume, Stage, ResumeStageHistory
+from backend.models.models import User, Vacancy, Resume, Stage, ResumeStageHistory
 target_metadata = Base.metadata
 
 
