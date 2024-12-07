@@ -54,6 +54,30 @@ def add_new_resume(resume: Resume):
         raise HTTPException(status_code=400, detail= "резюме не может быть добавлено")
     
 
+def add_new_vacancy(vacancy: Vacancy):
+    db: Session = get_db()    
+    try:
+        db.add(vacancy)
+        db.commit()
+        db.refresh(vacancy)
+    except:
+        raise HTTPException(status_code=400, detail= "вакансия не может быть добавлено")
+    
+
+def get_resume_by_name(candidate_name, db):
+    resume = db.query(Resume).filter(Resume.candidate_name == candidate_name).first()
+    if not resume:
+        raise HTTPException(status_code=404, detail="резюме не найдено")
+
+    return resume
+
+
+def get_stage_by_name(stage_name, db):
+    stage = db.query(Stage).filter(Stage.id == stage_name).first()
+    if not stage:
+        raise HTTPException(status_code=404, detail="стадии не существует")
+
+    return stage
 
 
 def get_user_id(username: str):
@@ -76,3 +100,38 @@ def get_stage_id(stage_name: str):
     if not stage:
         raise HTTPException(status_code=404, detail="стадии не сущесвует")
     return stage.id
+
+
+
+
+
+def move_resume_stage_in_db(data, current_user):
+    db: Session = get_db()
+    resume = get_resume_by_name(data.candidate_name, db)
+    new_stage = get_stage_id(data.new_stage_name)
+
+    current_history = db.query(ResumeStageHistory).filter(
+        ResumeStageHistory.resume_id == resume.id,
+        ResumeStageHistory.stage_id == resume.current_stage,
+        ResumeStageHistory.left_at.is_(None),  # Последняя активная стадия
+    ).first()
+    if current_history:
+        current_history.left_at = datetime.now(timezone.utc)  # Завершение текущей стадии
+
+
+    resume.current_stage = new_stage
+
+    # Создание записи в истории переходов
+    new_history = ResumeStageHistory(
+        id=uuid4(),
+        resume_id=resume.id,
+        stage_id=new_stage,
+        entered_at=datetime.now(timezone.utc),
+        processed_by=current_user,  # ID текущего пользователя
+    )
+
+    db.add(new_history)
+    db.commit()
+    db.refresh(resume)
+
+    return resume

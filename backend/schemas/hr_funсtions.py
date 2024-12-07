@@ -9,3 +9,7 @@ class AddingResumeRequest(BaseModel):
     work_experiens: Optional[int] = None
     salary_pred: Optional[int] = None
     source: Optional[str] = None
+
+class MoveResume(BaseModel):
+    candidate_name: str
+    new_stage_name: str
