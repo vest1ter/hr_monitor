@@ -63,7 +63,7 @@ def get_user_JWT_id(token: Optional[str] = Query(None)):
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Id information not found in token",
             )
-        return role
+        return id
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
