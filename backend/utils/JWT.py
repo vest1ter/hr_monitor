@@ -9,6 +9,7 @@ from backend.schemas.auth_schemas import User as user_response
 from backend.models.models import User
 from backend.database import get_db
 from sqlalchemy.orm import Session
+from uuid import UUID
 
 
 
@@ -57,13 +58,13 @@ def get_user_JWT_id(token: Optional[str] = Query(None)):
         )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        role = payload.get("uuid")
-        if not role:
+        user_id = payload.get("uuid")
+        if not user_id:
             raise HTTPException(
                 status_code=status.HTTP_403_FORBIDDEN,
                 detail="Id information not found in token",
             )
-        return id
+        return user_id
     except jwt.ExpiredSignatureError:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,

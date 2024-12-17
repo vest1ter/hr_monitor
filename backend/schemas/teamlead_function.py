@@ -1,15 +1,17 @@
 from pydantic import BaseModel, Field
 from fastapi.security import OAuth2PasswordBearer
-from typing import Optional
+from typing import Optional, Any, List
 from datetime import datetime
 from uuid import UUID
 
 
-class HRdata_request(BaseModel):
+class HRdataRequest(BaseModel):
     username: str
     password: str
 
-class VacancyCreate(BaseModel):
+
+
+class VacancyCreateRequest(BaseModel):
     title: str
     description: Optional[str]
     required_skills: Optional[str]
@@ -38,3 +40,23 @@ class ResumeFilterRequest(BaseModel):
     date_to: Optional[datetime] = Field(None, description="Фильтр: до даты")
     sort_by: Optional[str] = Field("created_at", description="Сортировка: created_at или sla")
     order: Optional[str] = Field("asc", description="Порядок: asc или desc")
+
+
+
+
+
+
+
+
+
+
+
+class AddHRResponse(BaseModel):
+    message: str
+    data: HRdataRequest
+
+
+
+
+class AddVacancyResponse(BaseModel):
+    message: str

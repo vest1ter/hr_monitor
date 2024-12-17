@@ -8,14 +8,14 @@ from fastapi import Depends, HTTPException, status
 from backend.models.models import UserRole, User, Vacancy, Resume, Stage, ResumeStageHistory
 from backend.database import get_db
 from sqlalchemy.orm import Session
-from backend.schemas.teamlead_function import HRdata_request
+from backend.schemas.teamlead_function import HRdataRequest
 from backend.utils.hashing import get_password_hash
 from datetime import datetime, timedelta, timezone
 from typing import Optional, List
 
 
 
-def add_hr_user(data: HRdata_request):
+def add_hr_user(data: HRdataRequest):
     db: Session = get_db()
     existing_user = db.query(User).filter(User.username == data.username).first()
     if existing_user:
@@ -58,12 +58,12 @@ def add_new_resume(resume: Resume):
 
 def add_new_vacancy(vacancy: Vacancy):
     db: Session = get_db()    
-    try:
-        db.add(vacancy)
-        db.commit()
-        db.refresh(vacancy)
-    except:
-        raise HTTPException(status_code=400, detail= "вакансия не может быть добавлено")
+    #try:
+    db.add(vacancy)
+    db.commit()
+    db.refresh(vacancy)
+    #except:
+        #raise HTTPException(status_code=400, detail= "вакансия не может быть добавлено")
     
 
 def get_resume_by_name(candidate_name, db):
@@ -144,21 +144,21 @@ def move_resume_stage_in_db(data, current_user):
     current_history = db.query(ResumeStageHistory).filter(
         ResumeStageHistory.resume_id == resume.id,
         ResumeStageHistory.stage_id == resume.current_stage,
-        ResumeStageHistory.left_at.is_(None),  # Последняя активная стадия
+        ResumeStageHistory.left_at.is_(None),  
     ).first()
     if current_history:
-        current_history.left_at = datetime.now(timezone.utc)  # Завершение текущей стадии
+        current_history.left_at = datetime.now(timezone.utc) 
 
 
     resume.current_stage = new_stage
 
-    # Создание записи в истории переходов
+
     new_history = ResumeStageHistory(
         id=uuid4(),
         resume_id=resume.id,
         stage_id=new_stage,
         entered_at=datetime.now(timezone.utc),
-        processed_by=current_user,  # ID текущего пользователя
+        processed_by=current_user,  
     )
 
     db.add(new_history)
