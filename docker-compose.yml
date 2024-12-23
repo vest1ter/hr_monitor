@@ -1,0 +1,29 @@
+version: "3.9"
+
+services:
+  # База данных PostgreSQL
+  hr_postgres_new:
+    image: postgres:15
+    container_name: hr_postgres_new
+    environment:
+      POSTGRES_DB: hr_base
+      POSTGRES_USER: hr_app
+      POSTGRES_PASSWORD: hr_pass123
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  # Бэкенд на FastAPI
+  hr_backend:
+    build: .
+    container_name: hr_backend
+    ports:
+      - "8000:8000"
+    depends_on:
+      - hr_postgres_new  # Запускать бэкенд после БД
+    environment:
+      DATABASE_URL: "postgresql://hr_app:hr_pass123@hr_postgres_new:5432/hr_base"
+
+volumes:
+  pgdata:

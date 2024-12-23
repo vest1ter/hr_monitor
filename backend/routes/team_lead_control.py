@@ -1,9 +1,25 @@
 from fastapi import Depends, HTTPException
-from backend.config import SECRET_KEY, ALGORITHM, ACCESS_TOKEN_EXPIRE_MINUTES, REFRESH_TOKEN_EXPIRE_DAYS
+from backend.config import (
+    SECRET_KEY,
+    ALGORITHM,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+    REFRESH_TOKEN_EXPIRE_DAYS,
+)
 from fastapi.routing import APIRouter
-from backend.schemas.teamlead_function import HRdataRequest, VacancyCreateRequest, ResumeOut, ResumeFilterRequest, AddHRResponse, AddVacancyResponse
+from backend.schemas.teamlead_function import (
+    HRdataRequest,
+    VacancyCreateRequest,
+    ResumeOut,
+    ResumeFilterRequest,
+    AddHRResponse,
+    AddVacancyResponse,
+)
 from backend.utils.JWT import team_lead_required, get_user_JWT_id
-from backend.databases_function.database_function import add_hr_user, add_new_vacancy, get_resumes
+from backend.databases_function.database_function import (
+    add_hr_user,
+    add_new_vacancy,
+    get_resumes,
+)
 from uuid import uuid4
 from backend.models.models import Vacancy
 from datetime import datetime, timedelta, timezone
@@ -12,24 +28,23 @@ from sqlalchemy.orm import Session
 from backend.database import get_db
 
 
-
-
 team_lead_control_router = APIRouter()
-
-
-
 
 
 @team_lead_control_router.post("/add_hr", response_model=AddHRResponse)
 async def add_hr(data: HRdataRequest, role: str = Depends(team_lead_required)):
     add_hr_user(data)
-    return AddHRResponse(message = "HR user added successfully", data = data)
+    return AddHRResponse(message="HR user added successfully", data=data)
 
 
 @team_lead_control_router.post("/add_vacancy")
-def create_vacancy(vacancy_data: VacancyCreateRequest, user_jwt: str, role: str = Depends(team_lead_required)):
+def create_vacancy(
+    vacancy_data: VacancyCreateRequest,
+    user_jwt: str,
+    role: str = Depends(team_lead_required),
+):
     current_user = get_user_JWT_id(user_jwt)
-    print("-------------------",current_user)
+    print("-------------------", current_user)
     new_vacancy = Vacancy(
         id=uuid4(),
         title=vacancy_data.title,
@@ -45,14 +60,12 @@ def create_vacancy(vacancy_data: VacancyCreateRequest, user_jwt: str, role: str 
     )
 
 
-
-
-
-
-
-
 @team_lead_control_router.get("/resumes", response_model=List[ResumeOut])
-def list_resumes(filters: ResumeFilterRequest = Depends(), role: str = Depends(team_lead_required), db: Session = Depends(get_db) ):
+def list_resumes(
+    filters: ResumeFilterRequest = Depends(),
+    role: str = Depends(team_lead_required),
+    db: Session = Depends(get_db),
+):
     try:
         resumes = get_resumes(
             db=db,

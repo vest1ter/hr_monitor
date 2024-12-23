@@ -7,10 +7,10 @@ from datetime import datetime
 import enum
 
 
-
 class UserRole(str, enum.Enum):
     hr = "hr"
     team_lead = "team_lead"
+
 
 class ResumeStage(str, enum.Enum):
     open = "открыта"
@@ -43,7 +43,7 @@ class Vacancy(Base):
     required_skills = Column(Text, nullable=True)
     salary_range = Column(String, nullable=True)
     created_at = Column(DateTime, default=datetime.utcnow, nullable=False)
-    
+
     created_by = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     created_by_user = relationship("User", back_populates="vacancy")
 
@@ -100,5 +100,3 @@ class ResumeStageHistory(Base):
 
     processed_by = Column(UUID(as_uuid=True), ForeignKey("user.id"), nullable=False)
     processed_by_user = relationship("User")
-
-

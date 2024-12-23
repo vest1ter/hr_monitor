@@ -2,7 +2,12 @@ import jwt
 import datetime
 from fastapi import HTTPException, status, Query
 from typing import Optional
-from backend.config import SECRET_KEY, ALGORITHM, REFRESH_TOKEN_EXPIRE_DAYS, ACCESS_TOKEN_EXPIRE_MINUTES
+from backend.config import (
+    SECRET_KEY,
+    ALGORITHM,
+    REFRESH_TOKEN_EXPIRE_DAYS,
+    ACCESS_TOKEN_EXPIRE_MINUTES,
+)
 from fastapi import Depends
 from backend.utils.hashing import get_password_hash, verify_password
 from backend.schemas.auth_schemas import User as user_response
@@ -10,7 +15,6 @@ from backend.models.models import User
 from backend.database import get_db
 from sqlalchemy.orm import Session
 from uuid import UUID
-
 
 
 fake_users_db = {
@@ -22,13 +26,13 @@ fake_users_db = {
 }
 
 
-
-
 def get_current_user_role(token: Optional[str] = Query(None)):
+    if token.startswith("Bearer "):
+        token = token.split(" ", 1)[1]
     if not token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Token parameter is required"
+            detail="Token parameter is required",
         )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -41,20 +45,21 @@ def get_current_user_role(token: Optional[str] = Query(None)):
         return role
     except jwt.ExpiredSignatureError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
-    
+
+
 def get_user_JWT_id(token: Optional[str] = Query(None)):
+    if token.startswith("Bearer "):
+        token = token.split(" ", 1)[1]
     if not token:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail="Token parameter is required"
+            detail="Token parameter is required",
         )
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
@@ -67,24 +72,21 @@ def get_user_JWT_id(token: Optional[str] = Query(None)):
         return user_id
     except jwt.ExpiredSignatureError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Token has expired"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Token has expired"
         )
     except jwt.InvalidTokenError:
         raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid token"
+            status_code=status.HTTP_401_UNAUTHORIZED, detail="Invalid token"
         )
-    
 
-    
+
 def team_lead_required(role: str = Depends(get_current_user_role)):
     if role != "team_lead":
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Access forbidden: Team Lead role required",
         )
-    
+
 
 def authenticate_user(username: str, password: str):
     db: Session = get_db()
@@ -93,15 +95,16 @@ def authenticate_user(username: str, password: str):
         return False
     if not verify_password(password, user.hashed_password):
         return False
-    return user_response(username=username, password=password, role = user.role)
-
-
+    return user_response(username=username, password=password, role=user.role)
 
 
 def verify_token(token: str):
+    if token.startswith("Bearer "):
+        token = token.split(" ", 1)[1]
+    print(token)
     try:
         payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        username = payload.get("sub")
+        username = payload.get("sub", None)
         if username is None:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
@@ -121,5 +124,3 @@ def verify_token(token: str):
             detail="Token is invalid",
             headers={"WWW-Authenticate": "Bearer"},
         )
-
-

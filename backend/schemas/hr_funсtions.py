@@ -2,6 +2,7 @@ from pydantic import BaseModel, UUID4, Field
 from typing import Optional
 
 
+
 class AddingResumeRequest(BaseModel):
     candidate_name: str
     position: str
@@ -10,6 +11,16 @@ class AddingResumeRequest(BaseModel):
     salary_pred: Optional[int] = None
     source: Optional[str] = None
 
+
 class MoveResume(BaseModel):
     candidate_name: str
     new_stage_name: str
+
+
+
+class AddResumeResponse(BaseModel):
+    message: str
+    resume: str
+
+class ResumeMoveResponse(BaseModel):
+    message: str
