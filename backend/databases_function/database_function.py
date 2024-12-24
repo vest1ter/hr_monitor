@@ -109,6 +109,7 @@ def get_user_id(username: str):
 
 def get_vacancy_by_name(vacancy_name: str):
     db: Session = get_db()
+    print(vacancy_name)
     vacancy = db.query(Vacancy).filter(Vacancy.title == vacancy_name).first()
     if not vacancy:
         raise HTTPException(status_code=404, detail="Вакансия не найденa")

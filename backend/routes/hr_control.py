@@ -24,7 +24,7 @@ from uuid import uuid4
 hr_control = APIRouter()
 
 
-@hr_control.post("/add_resume", response_model=AddResumeResponse)
+@hr_control.post("/hr_control/add_resume", response_model=AddResumeResponse)
 async def add_resume(data: AddingResumeRequest, user_jwt: str, vacancy_name: str):
     vacancy_id = get_vacancy_by_name(vacancy_name).id
     current_user = get_user_JWT_id(user_jwt)
@@ -49,7 +49,7 @@ async def add_resume(data: AddingResumeRequest, user_jwt: str, vacancy_name: str
     return AddResumeResponse(message= "sucsess", resume= str(new_resume.id))
 
 
-@hr_control.post("/move_resumes", response_model=ResumeMoveResponse)
+@hr_control.post("/hr_control/move_resumes", response_model=ResumeMoveResponse)
 def move_resume_stage(data: MoveResume, user_jwt: str):
     current_user = get_user_JWT_id(user_jwt)
 

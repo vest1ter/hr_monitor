@@ -19,7 +19,7 @@ from jose import jwt
 auth_router = APIRouter()
 
 
-@auth_router.post("/login", response_model=LoginResponse)
+@auth_router.post("/auth/login", response_model=LoginResponse)
 async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depends()):
     user = authenticate_user(form_data.username, form_data.password)
     if not user:
@@ -67,7 +67,7 @@ async def login(response: Response, form_data: OAuth2PasswordRequestForm = Depen
     )
 
 
-@auth_router.post("/refresh", response_model=RefreshResponse)
+@auth_router.post("/auth/refresh", response_model=RefreshResponse)
 async def refresh_token(request: Request, response: Response):
     '''
     # Генерируем новый access токен
@@ -106,7 +106,7 @@ async def refresh_token(request: Request, response: Response):
     return RefreshResponse(access_token = new_access_token, token_type= "bearer")
 
 
-@auth_router.get("/users/me", response_model=UserMeResponse)
+@auth_router.get("/auth/users/me", response_model=UserMeResponse)
 async def read_users_me(request: Request):
     '''
     if not token:
