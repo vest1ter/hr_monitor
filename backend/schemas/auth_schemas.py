@@ -20,4 +20,8 @@ class RefreshResponse(BaseModel):
 class UserMeResponse(BaseModel):
     access_token: str
 
+class Tokens(BaseModel):
+    access_token: str
+    refresh_token: str
+
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")

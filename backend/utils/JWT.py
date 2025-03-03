@@ -124,3 +124,5 @@ def verify_token(token: str):
             detail="Token is invalid",
             headers={"WWW-Authenticate": "Bearer"},
         )
+
+
