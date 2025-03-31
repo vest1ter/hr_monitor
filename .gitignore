@@ -2,6 +2,7 @@
 venv/
 env/
 .venv/
+.idea/
 
 # Исключить папки __pycache__ из всех директорий
 __pycache__/
